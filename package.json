@@ -5,16 +5,16 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-		"test": "jest",
-		"build": "tsc",
-		"format": "prettier --write \"src/**/*.ts\"",
-		"lint": "rm -rf lib && eslint 'src/**/*.{ts,tsx}' --quiet --fix",
-		"prepare": "pnpm run lint && pnpm run format && pnpm run build",
-		"prepublishOnly": "pnpm run lint",
-		"release": "./scripts/release.sh",
-		"preversion": "pnpm run lint",
-		"version": "pnpm run test && pnpm run build && pnpm run format && git add -A package.json src && git commit -m \"Bump version to $(cat package.json | jq -r '.version')\" && pnpm publish --access public",
-		"postversion": "git push -u origin HEAD --tags && ./scripts/release.sh $(cat package.json | jq -r '.version')"
+    "test": "jest",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "rm -rf lib && eslint 'src/**/*.{ts,tsx}' --quiet --fix",
+    "prepare": "pnpm run lint && pnpm run format && pnpm run build",
+    "prepublishOnly": "pnpm run lint",
+    "release": "./scripts/release.sh",
+    "preversion": "pnpm run test && pnpm run lint",
+    "version": "pnpm run build && pnpm run format && git add -A package.json src && git commit -m \"Bump version to $(cat package.json | jq -r '.version')\" && pnpm publish --access public",
+    "postversion": "git push -u origin HEAD --tags && ./scripts/release.sh $(cat package.json | jq -r '.version')"
   },
   "repository": {
     "type": "git",
