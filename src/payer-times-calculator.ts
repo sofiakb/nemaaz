@@ -20,8 +20,7 @@ import { floatToTime12, floatToTime24, julianDate, timeDiff } from './utils/util
 import { Portion } from './logic/portion';
 import { Trigonometric } from './logic/trigonometric';
 import { Calculation } from './logic/calculation';
-import { Moment } from 'moment';
-import * as moment from 'moment';
+import moment, { Moment } from 'moment';
 import { mapValues } from 'lodash';
 
 export class PrayerTimesCalculator {
