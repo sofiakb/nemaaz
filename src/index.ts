@@ -9,3 +9,16 @@
  * File src/index
  */
 
+// Support for doing something awesome.
+//
+// More documentation goes here.
+
+export * from './enums/asr-juristic';
+export * from './enums/higher-latitudes-adjusting';
+export * from './enums/selectors';
+export * from './enums/prayer';
+export * from './enums/time-formats';
+export * from './logic/calculation-method';
+export * from './logic/calculator-params';
+export * from './logic/coordinates';
+export * from './prayer-times';

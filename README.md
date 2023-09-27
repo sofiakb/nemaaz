@@ -6,9 +6,16 @@
 
 [comment]: <> ([![LinkedIn][linkedin-shield]][linkedin-url])
 
+[![Create release](https://github.com/sofiakb/nemaaz/actions/workflows/create_release.yml/badge.svg)](https://github.com/sofiakb/nemaaz/actions/workflows/create_release.yml)
+
 
 
 <!-- PROJECT LOGO -->
+
+<p align="center">
+  <img height="100px" src="./assets/images/logo.png">
+</p>
+
 <br />
 <p align="center">
 
@@ -61,13 +68,12 @@
 
 ## About The Library
 
-The library simplify API calls with axios library.
+The library gives you prayer times in a given position.
 
 ### Built With
 
 * [Javascript](https://developer.mozilla.org/fr/docs/Web/JavaScript)
 * [Typescript](https://www.typescriptlang.org/)
-* [Axios](https://axios-http.com/docs/intro)
 
 <!-- GETTING STARTED -->
 
@@ -87,12 +93,38 @@ npm install --save @sofiakb/nemaaz
 ## Usage
 
 ```typescript
-import Api from "@sofiakb/nemaaz";
+import {
+	AsrJuristic,
+	CalculationMethod,
+	CalculatorParams,
+	Coordinates,
+	HigherLatitudesAdjusting,
+	PrayerTimes,
+	TimeFormats,
+} from '@sofiakb/nemaaz';
 
-// Use in controller
-class ExampleController extends Api {
-    
-}
+import { DateTime } from 'luxon';
+import { mapValues } from 'lodash';
+
+const date = DateTime.now().setZone('Europe/Paris');
+
+const test = new PrayerTimes(
+		new CalculatorParams({
+			coordinates: new Coordinates({
+				latitude: 50.3555,
+				longitude: 3.11127,
+			}),
+			calculationMethod: CalculationMethod.mwl(),
+			adjustHighLats: HigherLatitudesAdjusting.ANGLE_BASED,
+			asrJuristic: AsrJuristic.SHAFI,
+			dhuhrMinutes: 0,
+			numIterations: 1,
+			timeFormat: TimeFormats.TIME24,
+			date: date.toJSDate(),
+		}),
+);
+
+console.log(mapValues(test.toJson(), (item) => DateTime.fromJSDate(item, { zone: 'Europe/Paris' }).toString()));
 ```
 
 <!-- ROADMAP -->
