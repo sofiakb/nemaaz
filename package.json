@@ -1,5 +1,5 @@
 {
-  "name": "@sofiakb/prayer-times",
+  "name": "@sofiakb/nemaaz",
   "version": "1.0.0-dev.0",
   "description": "A typescript library for axios API calls.",
   "main": "lib/index.js",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/sofiakb/prayer-times.git"
+    "url": "git+ssh://git@github.com/sofiakb/nemaaz.git"
   },
   "author": {
     "name": "Sofiakb",
@@ -26,9 +26,9 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sofiakb/prayer-times/issues"
+    "url": "https://github.com/sofiakb/nemaaz/issues"
   },
-  "homepage": "https://github.com/sofiakb/prayer-times#readme",
+  "homepage": "https://github.com/sofiakb/nemaaz#readme",
 	"devDependencies": {
 		"@babel/core": "^7.19.1",
 		"@babel/preset-env": "^7.19.1",

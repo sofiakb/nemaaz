@@ -12,17 +12,17 @@
 <br />
 <p align="center">
 
-  <h1 align="center">prayer-times</h1>
+  <h1 align="center">nemaaz</h1>
 
   <p align="center">
       A typescript library for axios API calls.
       <br />
-      <!--<a href="https://github.com/sofiakb/prayer-times"><strong>Explore the docs »</strong></a>-->
+      <!--<a href="https://github.com/sofiakb/nemaaz"><strong>Explore the docs »</strong></a>-->
       <br />
       <br />
-      <a href="https://github.com/sofiakb/prayer-times/issues">Report Bug</a>
+      <a href="https://github.com/sofiakb/nemaaz/issues">Report Bug</a>
       ·
-      <a href="https://github.com/sofiakb/prayer-times/issues">Request Feature</a>
+      <a href="https://github.com/sofiakb/nemaaz/issues">Request Feature</a>
   </p>
 
 </p>
@@ -79,7 +79,7 @@ The library simplify API calls with axios library.
 ### Installation
 
 ```shell
-npm install --save @sofiakb/prayer-times
+npm install --save @sofiakb/nemaaz
 ```
 
 <!-- USAGE EXAMPLES -->
@@ -87,7 +87,7 @@ npm install --save @sofiakb/prayer-times
 ## Usage
 
 ```typescript
-import Api from "@sofiakb/prayer-times";
+import Api from "@sofiakb/nemaaz";
 
 // Use in controller
 class ExampleController extends Api {
@@ -99,7 +99,7 @@ class ExampleController extends Api {
 
 ## Roadmap
 
-See the [open issues](https://github.com/sofiakb/prayer-times/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/sofiakb/nemaaz/issues) for a list of proposed features (and known issues).
 
 
 <!-- LICENSE -->
@@ -114,25 +114,25 @@ Distributed under the MIT License. See `LICENSE` for more information.
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[contributors-shield]: https://img.shields.io/github/contributors/sofiakb/prayer-times.svg?style=for-the-badge
+[contributors-shield]: https://img.shields.io/github/contributors/sofiakb/nemaaz.svg?style=for-the-badge
 
-[contributors-url]: https://github.com/sofiakb/prayer-times/graphs/contributors
+[contributors-url]: https://github.com/sofiakb/nemaaz/graphs/contributors
 
-[forks-shield]: https://img.shields.io/github/forks/sofiakb/prayer-times.svg?style=for-the-badge
+[forks-shield]: https://img.shields.io/github/forks/sofiakb/nemaaz.svg?style=for-the-badge
 
-[forks-url]: https://github.com/sofiakb/prayer-times/network/members
+[forks-url]: https://github.com/sofiakb/nemaaz/network/members
 
-[stars-shield]: https://img.shields.io/github/stars/sofiakb/prayer-times.svg?style=for-the-badge
+[stars-shield]: https://img.shields.io/github/stars/sofiakb/nemaaz.svg?style=for-the-badge
 
-[stars-url]: https://github.com/sofiakb/prayer-times/stargazers
+[stars-url]: https://github.com/sofiakb/nemaaz/stargazers
 
-[issues-shield]: https://img.shields.io/github/issues/sofiakb/prayer-times.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/sofiakb/nemaaz.svg?style=for-the-badge
 
-[issues-url]: https://github.com/sofiakb/prayer-times/issues
+[issues-url]: https://github.com/sofiakb/nemaaz/issues
 
-[license-shield]: https://img.shields.io/github/license/sofiakb/prayer-times.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/sofiakb/nemaaz.svg?style=for-the-badge
 
-[license-url]: https://github.com/sofiakb/prayer-times/blob/main/LICENSE
+[license-url]: https://github.com/sofiakb/nemaaz/blob/main/LICENSE
 
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 

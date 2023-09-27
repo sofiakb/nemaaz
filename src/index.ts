@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- * prayer-times
+ * nemaaz
  *
  * (c) Sofiakb <contact.sofiakb@gmail.com>
  *
