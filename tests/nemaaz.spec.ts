@@ -35,6 +35,7 @@ describe('PrayerTimes', () => {
 			dhuhrMinutes: 0,
 			numIterations: 1,
 			timeFormat: TimeFormats.TIME24,
+			timeZone: 'Europe/Paris',
 			date: DateTime.fromObject({ year: 2023, month: 6, day: 30, hour: 12, minute: 0, second: 0 })
 				.setZone('Europe/Paris')
 				.toJSDate(),
