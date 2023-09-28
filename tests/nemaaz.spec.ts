@@ -20,6 +20,7 @@ import {
 	PrayerTimes,
 	TimeFormats,
 } from '../src';
+import { DateTime } from 'luxon';
 
 describe('PrayerTimes', () => {
 	const prayerTimes = new PrayerTimes(
@@ -34,7 +35,9 @@ describe('PrayerTimes', () => {
 			dhuhrMinutes: 0,
 			numIterations: 1,
 			timeFormat: TimeFormats.TIME24,
-			date: moment({ year: 2023, month: 5, day: 30, hour: 12, minute: 0, second: 0 }).toDate(),
+			date: DateTime.fromObject({ year: 2023, month: 6, day: 30, hour: 12, minute: 0, second: 0 })
+				.setZone('Europe/Paris')
+				.toJSDate(),
 		}),
 	);
 
