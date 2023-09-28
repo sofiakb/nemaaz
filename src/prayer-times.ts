@@ -12,6 +12,7 @@
 import { CalculatorParams } from './logic/calculator-params';
 import { Prayer } from './enums/prayer';
 import { PrayerTimesCalculator } from './payer-times-calculator';
+import { map } from 'lodash';
 
 export class PrayerTimes {
 	fajrAfter: Date;
@@ -54,6 +55,10 @@ export class PrayerTimes {
 			isha: this.isha,
 			fajrAfter: this.fajrAfter,
 		};
+	}
+
+	get values(): Record<string, Date>[] {
+		return map(this.toJson(), (item: Date, key: string) => ({ [key]: item }));
 	}
 
 	timeForPrayer(prayer: string): Date | null {

@@ -36,8 +36,10 @@ const test = new PrayerTimes(
 		dhuhrMinutes: 0,
 		numIterations: 1,
 		timeFormat: TimeFormats.TIME24,
+		timeZone: 'Europe/Paris',
 		date: date.toJSDate(),
 	}),
 );
 
 console.log(mapValues(test.toJson(), (item) => DateTime.fromJSDate(item, { zone: 'Europe/Paris' }).toString()));
+console.log(test.values);
