@@ -24,6 +24,7 @@ interface CalculatorParamsProperties {
 	adjustHighLats?: HigherLatitudesAdjusting;
 	timeFormat?: TimeFormats;
 	calculationMethod?: CalculationMethod;
+	timeZone?: string;
 }
 
 export class CalculatorParams {
@@ -36,6 +37,8 @@ export class CalculatorParams {
 	timeFormat?: TimeFormats; // time format
 	calculationMethod?: CalculationMethod;
 
+	timeZone: string | null;
+
 	constructor({
 		coordinates,
 		date,
@@ -45,6 +48,7 @@ export class CalculatorParams {
 		adjustHighLats,
 		timeFormat,
 		calculationMethod,
+		timeZone,
 	}: CalculatorParamsProperties) {
 		this.coordinates = coordinates;
 		this.date = date;
@@ -54,5 +58,7 @@ export class CalculatorParams {
 		this.adjustHighLats = adjustHighLats;
 		this.timeFormat = timeFormat;
 		this.calculationMethod = calculationMethod;
+
+		this.timeZone = timeZone ?? null;
 	}
 }

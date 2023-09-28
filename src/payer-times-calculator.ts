@@ -22,6 +22,7 @@ import { Trigonometric } from './logic/trigonometric';
 import { Calculation } from './logic/calculation';
 import { DateTime, Duration } from 'luxon';
 import { mapValues } from 'lodash';
+import * as process from 'process';
 
 export class PrayerTimesCalculator {
 	private timeNames: string[] = [
@@ -44,7 +45,8 @@ export class PrayerTimesCalculator {
 	private julianDate: number = 0;
 
 	private numIterations: number = 3;
-	private timeZone: number = 2;
+	private timeZone: string;
+	private timeZoneOffset: number = 0;
 	private adjustHighLats: HigherLatitudesAdjusting = HigherLatitudesAdjusting.ANGLE_BASED;
 	private timeFormat: TimeFormats = TimeFormats.TIME24;
 	private calculationMethod: CalculationMethod = CalculationMethod.mwl();
@@ -58,6 +60,9 @@ export class PrayerTimesCalculator {
 		this.dhuhrMinutes = params.dhuhrMinutes ?? this.dhuhrMinutes;
 		this.timeFormat = params.timeFormat ?? this.timeFormat;
 		this.loop = loop;
+
+		this.timeZone = params.timeZone ?? 'UTC';
+		this.timeZoneOffset = this.baseDate().offset / 60;
 
 		this.prayTime(this.calculationMethod);
 	}
@@ -81,7 +86,7 @@ export class PrayerTimesCalculator {
 			hour: 0,
 			minute: 0,
 			second: 0,
-		});
+		}).setZone(this.timeZone);
 	}
 
 	public getDatePrayerTimes(coordinates: Coordinates): Record<string, Date> {
@@ -112,27 +117,29 @@ export class PrayerTimesCalculator {
 				new PrayerTimesCalculator(
 					new CalculatorParams({
 						coordinates: this.coordinates,
-						date: this.baseDate()
+						date: DateTime.fromJSDate(this.date)
 							.plus(Duration.fromObject({ days: 1 }))
 							.toJSDate(),
+						timeZone: this.timeZone,
 					}),
 					false,
 				).getPrayerTimes()['fajr']!,
-			);
+			).setZone(this.timeZone);
 			days['ishaBefore'] = DateTime.fromJSDate(
 				new PrayerTimesCalculator(
 					new CalculatorParams({
 						coordinates: this.coordinates,
-						date: this.baseDate()
+						date: DateTime.fromJSDate(this.date)
 							.minus(Duration.fromObject({ days: 1 }))
 							.toJSDate(),
+						timeZone: this.timeZone,
 					}),
 					false,
 				).getPrayerTimes()['isha']!,
-			);
+			).setZone(this.timeZone);
 		}
 
-		return mapValues(days, (item) => new Date(Date.parse(item.toISO()!)));
+		return mapValues(days, (item) => item.toJSDate());
 	}
 
 	public getPrayerTimes(): Record<string, Date> {
@@ -254,7 +261,7 @@ export class PrayerTimesCalculator {
 
 	private _adjustTimes(times: number[]): number[] {
 		for (let i = 0; i < times.length; i++) {
-			times[i] += this.timeZone - this.coordinates.longitude / 15;
+			times[i] += this.timeZoneOffset - this.coordinates.longitude / 15;
 		}
 
 		times[2] += this.dhuhrMinutes / 60; // Dhuhr
