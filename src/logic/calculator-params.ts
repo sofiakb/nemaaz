@@ -15,6 +15,17 @@ import { CalculationMethod } from './calculation-method';
 import { Coordinates } from './coordinates';
 import { AsrJuristic } from '../enums/asr-juristic';
 
+interface CalculatorParamsProperties {
+	coordinates: Coordinates;
+	date: Date;
+	asrJuristic?: AsrJuristic;
+	dhuhrMinutes?: number;
+	numIterations?: number;
+	adjustHighLats?: HigherLatitudesAdjusting;
+	timeFormat?: TimeFormats;
+	calculationMethod?: CalculationMethod;
+}
+
 export class CalculatorParams {
 	asrJuristic?: AsrJuristic; // Juristic method for Asr
 	dhuhrMinutes?: number; // minutes after midday for Dhuhr
@@ -34,16 +45,7 @@ export class CalculatorParams {
 		adjustHighLats,
 		timeFormat,
 		calculationMethod,
-	}: {
-		coordinates: Coordinates;
-		date: Date;
-		asrJuristic?: AsrJuristic;
-		dhuhrMinutes?: number;
-		numIterations?: number;
-		adjustHighLats?: HigherLatitudesAdjusting;
-		timeFormat?: TimeFormats;
-		calculationMethod?: CalculationMethod;
-	}) {
+	}: CalculatorParamsProperties) {
 		this.coordinates = coordinates;
 		this.date = date;
 		this.asrJuristic = asrJuristic;

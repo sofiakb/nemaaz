@@ -20,7 +20,7 @@ import { floatToTime12, floatToTime24, julianDate, timeDiff } from './utils/util
 import { Portion } from './logic/portion';
 import { Trigonometric } from './logic/trigonometric';
 import { Calculation } from './logic/calculation';
-import moment, { Moment } from 'moment';
+import { DateTime, Duration } from 'luxon';
 import { mapValues } from 'lodash';
 
 export class PrayerTimesCalculator {
@@ -73,10 +73,10 @@ export class PrayerTimesCalculator {
 		this.calculationMethod = calculationMethod;
 	}
 
-	private baseDate(): Moment {
-		return moment({
+	private baseDate(): DateTime {
+		return DateTime.fromObject({
 			year: this.date.getFullYear(),
-			month: this.date.getMonth(),
+			month: this.date.getMonth() + 1,
 			day: this.date.getDate(),
 			hour: 0,
 			minute: 0,
@@ -88,12 +88,12 @@ export class PrayerTimesCalculator {
 		this.coordinates = coordinates;
 
 		this.julianDate =
-			julianDate(this.baseDate().year(), this.baseDate().month() + 1, this.baseDate().date()) -
+			julianDate(this.baseDate().year, this.baseDate().month, this.baseDate().day) -
 			coordinates.longitude / (15 * 24);
 
 		const daysTmp: string[] = this._computeDayTimes().map((e) => e.toString());
 
-		const days: Record<string, Moment> = {};
+		const days: Record<string, DateTime> = {};
 
 		for (let i = 0; i < daysTmp.length; i++) {
 			const d = daysTmp[i];
@@ -102,35 +102,37 @@ export class PrayerTimesCalculator {
 				const timeComponents = d.split(':');
 				const hour = parseInt(timeComponents[0]) ?? 0;
 				const minute = parseInt(timeComponents[1]) ?? 0;
-				const dateTime = this.baseDate();
-				dateTime.add(hour, 'hours');
-				dateTime.add(minute, 'minutes');
+				const dateTime = this.baseDate().plus(Duration.fromObject({ hour, minute }));
 				days[this.timeNames[i].toLowerCase()] = dateTime;
 			}
 		}
 
 		if (this.loop) {
-			days['fajrAfter'] = moment(
+			days['fajrAfter'] = DateTime.fromJSDate(
 				new PrayerTimesCalculator(
 					new CalculatorParams({
 						coordinates: this.coordinates,
-						date: this.baseDate().add(1, 'days').toDate(),
+						date: this.baseDate()
+							.plus(Duration.fromObject({ days: 1 }))
+							.toJSDate(),
 					}),
 					false,
 				).getPrayerTimes()['fajr']!,
 			);
-			days['ishaBefore'] = moment(
+			days['ishaBefore'] = DateTime.fromJSDate(
 				new PrayerTimesCalculator(
 					new CalculatorParams({
 						coordinates: this.coordinates,
-						date: this.baseDate().add(-1, 'days').toDate(),
+						date: this.baseDate()
+							.minus(Duration.fromObject({ days: 1 }))
+							.toJSDate(),
 					}),
 					false,
 				).getPrayerTimes()['isha']!,
 			);
 		}
 
-		return mapValues(days, (item) => item.toDate());
+		return mapValues(days, (item) => new Date(Date.parse(item.toISO()!)));
 	}
 
 	public getPrayerTimes(): Record<string, Date> {
