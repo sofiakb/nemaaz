@@ -45,6 +45,29 @@ export const prayerToLabel = (prayer: Prayer): string => {
 	}
 };
 
+export const prayerToArabic = (prayer: Prayer): string => {
+	switch (prayer) {
+		case Prayer.FAJR:
+		case Prayer.FAJR_AFTER:
+			return 'الفجر';
+		case Prayer.SHURUQ:
+			return 'شروق';
+		case Prayer.SUNSET:
+			return 'سانست';
+		case Prayer.DHUHR:
+			return 'الظهر';
+		case Prayer.ASR:
+			return 'العصر';
+		case Prayer.MAGHRIB:
+			return 'المغرب';
+		case Prayer.ISHA:
+		case Prayer.ISHA_BEFORE:
+			return 'العشاء';
+		default:
+			return 'None';
+	}
+};
+
 export const prayerFromString = (str: string): Prayer => {
 	switch (str.toUpperCase()) {
 		case 'FAJR':
