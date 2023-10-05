@@ -89,24 +89,24 @@ export class PrayerTimes {
 		}
 	}
 
-	currentPrayer({ date }: { date: Date }): Prayer {
-		if (date > this.isha) return Prayer.ISHA;
-		if (date > this.maghrib) return Prayer.MAGHRIB;
-		if (date > this.asr) return Prayer.ASR;
-		if (date > this.dhuhr) return Prayer.DHUHR;
-		if (date > this.shuruq) return Prayer.SHURUQ;
-		if (date > this.fajr) return Prayer.FAJR;
-		return Prayer.ISHA_BEFORE;
+	currentPrayer({ date }: { date: Date }): PrayerTimeResult {
+		if (date > this.isha) return { prayer: Prayer.ISHA, date: this.isha };
+		if (date > this.maghrib) return { prayer: Prayer.MAGHRIB, date: this.maghrib };
+		if (date > this.asr) return { prayer: Prayer.ASR, date: this.asr };
+		if (date > this.dhuhr) return { prayer: Prayer.DHUHR, date: this.dhuhr };
+		if (date > this.shuruq) return { prayer: Prayer.SHURUQ, date: this.shuruq };
+		if (date > this.fajr) return { prayer: Prayer.FAJR, date: this.fajr };
+		return { prayer: Prayer.ISHA_BEFORE, date: this.ishaBefore };
 	}
 
-	nextPrayer(): Prayer {
+	nextPrayer(): PrayerTimeResult {
 		const date = this.params.date;
-		if (date > this.isha) return Prayer.FAJR_AFTER;
-		if (date > this.maghrib) return Prayer.ISHA;
-		if (date > this.asr) return Prayer.MAGHRIB;
-		if (date > this.dhuhr) return Prayer.ASR;
-		if (date > this.shuruq) return Prayer.DHUHR;
-		if (date > this.fajr) return Prayer.SHURUQ;
-		return Prayer.FAJR;
+		if (date > this.isha) return { prayer: Prayer.FAJR_AFTER, date: this.fajrAfter };
+		if (date > this.maghrib) return { prayer: Prayer.ISHA, date: this.isha };
+		if (date > this.asr) return { prayer: Prayer.MAGHRIB, date: this.maghrib };
+		if (date > this.dhuhr) return { prayer: Prayer.ASR, date: this.asr };
+		if (date > this.shuruq) return { prayer: Prayer.DHUHR, date: this.dhuhr };
+		if (date > this.fajr) return { prayer: Prayer.SHURUQ, date: this.shuruq };
+		return { prayer: Prayer.FAJR, date: this.fajr };
 	}
 }
