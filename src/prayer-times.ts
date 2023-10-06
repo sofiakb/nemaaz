@@ -89,8 +89,8 @@ export class PrayerTimes {
 		}
 	}
 
-	currentPrayer({ date }: { date?: Date }): PrayerTimeResult {
-		date = date ?? this.params.date;
+	currentPrayer(options?: { date?: Date }): PrayerTimeResult {
+		const date = options?.date ?? this.params.date;
 		if (date > this.isha) return { prayer: Prayer.ISHA, date: this.isha };
 		if (date > this.maghrib) return { prayer: Prayer.MAGHRIB, date: this.maghrib };
 		if (date > this.asr) return { prayer: Prayer.ASR, date: this.asr };
