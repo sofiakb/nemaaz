@@ -9,10 +9,10 @@
  * File /prayer-times
  */
 
-import { CalculatorParams }         from './logic/calculator-params';
+import { CalculatorParams } from './logic/calculator-params';
 import { Prayer, prayerFromString } from './enums/prayer';
-import { PrayerTimesCalculator }    from './payer-times-calculator';
-import { map }                      from 'lodash';
+import { PrayerTimesCalculator } from './payer-times-calculator';
+import { map } from 'lodash';
 
 export interface PrayerTimeResult {
 	prayer: Prayer;
@@ -51,14 +51,14 @@ export class PrayerTimes {
 	toJson(): Record<string, Date> {
 		return {
 			ishaBefore: this.ishaBefore,
-			fajr      : this.fajr,
-			shuruq    : this.shuruq,
-			sunset    : this.sunset,
-			dhuhr     : this.dhuhr,
-			asr       : this.asr,
-			maghrib   : this.maghrib,
-			isha      : this.isha,
-			fajrAfter : this.fajrAfter,
+			fajr: this.fajr,
+			shuruq: this.shuruq,
+			sunset: this.sunset,
+			dhuhr: this.dhuhr,
+			asr: this.asr,
+			maghrib: this.maghrib,
+			isha: this.isha,
+			fajrAfter: this.fajrAfter,
 		};
 	}
 
