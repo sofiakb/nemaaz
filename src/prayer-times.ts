@@ -9,10 +9,10 @@
  * File /prayer-times
  */
 
-import { CalculatorParams } from './logic/calculator-params';
+import { CalculatorParams }         from './logic/calculator-params';
 import { Prayer, prayerFromString } from './enums/prayer';
-import { PrayerTimesCalculator } from './payer-times-calculator';
-import { map } from 'lodash';
+import { PrayerTimesCalculator }    from './payer-times-calculator';
+import { map }                      from 'lodash';
 
 export interface PrayerTimeResult {
 	prayer: Prayer;
@@ -51,14 +51,14 @@ export class PrayerTimes {
 	toJson(): Record<string, Date> {
 		return {
 			ishaBefore: this.ishaBefore,
-			fajr: this.fajr,
-			shuruq: this.shuruq,
-			sunset: this.sunset,
-			dhuhr: this.dhuhr,
-			asr: this.asr,
-			maghrib: this.maghrib,
-			isha: this.isha,
-			fajrAfter: this.fajrAfter,
+			fajr      : this.fajr,
+			shuruq    : this.shuruq,
+			sunset    : this.sunset,
+			dhuhr     : this.dhuhr,
+			asr       : this.asr,
+			maghrib   : this.maghrib,
+			isha      : this.isha,
+			fajrAfter : this.fajrAfter,
 		};
 	}
 
@@ -89,8 +89,8 @@ export class PrayerTimes {
 		}
 	}
 
-	currentPrayer(options?: { date?: Date }): PrayerTimeResult {
-		const date = options?.date ?? this.params.date;
+	currentPrayer(date?: Date): PrayerTimeResult {
+		date ??= new Date();
 		if (date > this.isha) return { prayer: Prayer.ISHA, date: this.isha };
 		if (date > this.maghrib) return { prayer: Prayer.MAGHRIB, date: this.maghrib };
 		if (date > this.asr) return { prayer: Prayer.ASR, date: this.asr };
@@ -100,8 +100,8 @@ export class PrayerTimes {
 		return { prayer: Prayer.ISHA_BEFORE, date: this.ishaBefore };
 	}
 
-	nextPrayer(): PrayerTimeResult {
-		const date = this.params.date;
+	nextPrayer(date?: Date): PrayerTimeResult {
+		date ??= new Date();
 		if (date > this.isha) return { prayer: Prayer.FAJR_AFTER, date: this.fajrAfter };
 		if (date > this.maghrib) return { prayer: Prayer.ISHA, date: this.isha };
 		if (date > this.asr) return { prayer: Prayer.MAGHRIB, date: this.maghrib };
