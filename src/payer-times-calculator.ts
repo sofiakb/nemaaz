@@ -21,7 +21,7 @@ import { Portion } from './logic/portion';
 import { Trigonometric } from './logic/trigonometric';
 import { Calculation } from './logic/calculation';
 import { DateTime, Duration } from 'luxon';
-import mapValues from 'lodash.mapvalues';
+import mapValues from 'lodash/mapValues';
 
 export class PrayerTimesCalculator {
 	private timeNames: string[] = [
