@@ -5,6 +5,12 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  lodash.map:
+    specifier: ^4.6.0
+    version: 4.6.0
+  lodash.mapvalues:
+    specifier: ^4.6.0
+    version: 4.6.0
   luxon:
     specifier: ^3.4.3
     version: 3.4.3
@@ -25,9 +31,12 @@ devDependencies:
   '@types/jquery':
     specifier: ^3.5.19
     version: 3.5.19
-  '@types/lodash':
-    specifier: ^4.14.199
-    version: 4.14.199
+  '@types/lodash.map':
+    specifier: ^4.6.13
+    version: 4.6.13
+  '@types/lodash.mapvalues':
+    specifier: ^4.6.8
+    version: 4.6.8
   '@types/luxon':
     specifier: ^3.3.2
     version: 3.3.2
@@ -58,9 +67,6 @@ devDependencies:
   jest:
     specifier: ^29.7.0
     version: 29.7.0(@types/node@20.7.0)(ts-node@10.9.1)
-  lodash:
-    specifier: ^4.17.21
-    version: 4.17.21
   moment:
     specifier: ^2.29.4
     version: 2.29.4
@@ -1768,6 +1774,18 @@ packages:
 
   /@types/json-schema@7.0.13:
     resolution: {integrity: sha512-RbSSoHliUbnXj3ny0CNFOoxrIDV6SUGyStHsvDqosw6CkdPV8TtWGlfecuK4ToyMEAql6pzNxgCFKanovUzlgQ==}
+    dev: true
+
+  /@types/lodash.map@4.6.13:
+    resolution: {integrity: sha512-kppRBzlpuvQQsr7R2nv/DDDZds8fglRFNAK70WUOkOC18KOcuQ22oQF9Kgy5Z2v/eDNkBm0ltrT6FThSkuWwow==}
+    dependencies:
+      '@types/lodash': 4.14.199
+    dev: true
+
+  /@types/lodash.mapvalues@4.6.8:
+    resolution: {integrity: sha512-pjyc26C5Ku3hBaqTZnO+eYR7FQ8zyoYTmscqFGsSZSfyeGWVu0K5hvKpytG7CRyaAcks83Z7lHzM5wa3Lk/2eQ==}
+    dependencies:
+      '@types/lodash': 4.14.199
     dev: true
 
   /@types/lodash@4.14.199:
@@ -3530,16 +3548,20 @@ packages:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
     dev: true
 
+  /lodash.map@4.6.0:
+    resolution: {integrity: sha512-worNHGKLDetmcEYDvh2stPCrrQRkP20E4l0iIS7F8EvzMqBBi7ltvFN5m1HvTf1P7Jk1txKhvFcmYsCr8O2F1Q==}
+    dev: false
+
+  /lodash.mapvalues@4.6.0:
+    resolution: {integrity: sha512-JPFqXFeZQ7BfS00H58kClY7SPVeHertPE0lNuCyZ26/XlN8TvakYD7b9bGyNmXbT/D3BbtPAAmq90gPWqLkxlQ==}
+    dev: false
+
   /lodash.memoize@4.1.2:
     resolution: {integrity: sha512-t7j+NzmgnQzTAYXcsHYLgimltOV1MXHtlOWf6GjL9Kj8GK5FInw5JotxvbOs+IvV1/Dzo04/fCGfLVs7aXb4Ag==}
     dev: true
 
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
-    dev: true
-
-  /lodash@4.17.21:
-    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: true
 
   /lru-cache@5.1.1:

@@ -12,7 +12,7 @@
 import { CalculatorParams } from './logic/calculator-params';
 import { Prayer, prayerFromString } from './enums/prayer';
 import { PrayerTimesCalculator } from './payer-times-calculator';
-import { map } from 'lodash';
+import map from 'lodash.map';
 
 export interface PrayerTimeResult {
 	prayer: Prayer;
