@@ -104,7 +104,7 @@ import {
 } from '@sofiakb/nemaaz';
 
 import { DateTime } from 'luxon';
-import mapValues from 'lodash/mapValues';
+import { mapValues } from 'lodash';
 
 const date = DateTime.now().setZone('Europe/Paris');
 
