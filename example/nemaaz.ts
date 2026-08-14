@@ -20,7 +20,6 @@ import {
 } from '../src';
 
 import { DateTime } from 'luxon';
-import { mapValues } from 'lodash';
 
 const date = DateTime.now().setZone('Europe/Paris');
 
@@ -41,5 +40,13 @@ const test = new PrayerTimes(
 	}),
 );
 
-console.log(mapValues(test.toJson(), (item) => DateTime.fromJSDate(item, { zone: 'Europe/Paris' }).toString()));
+console.log(
+	Object.fromEntries(
+		Object.entries(test.toJson()).map(([name, item]) => [
+			name,
+			DateTime.fromJSDate(item, { zone: 'Europe/Paris' }).toString(),
+		]),
+	),
+);
 console.log(test.values);
+console.log(test.currentDailyPrayer(), test.nextDailyPrayer());

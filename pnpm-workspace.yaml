@@ -1,0 +1,4 @@
+allowBuilds:
+  # Native resolver pulled in by jest-resolve. pnpm blocks install scripts by default,
+  # so it has to be allowed explicitly for CI installs to succeed.
+  unrs-resolver: true
