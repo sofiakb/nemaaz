@@ -113,8 +113,59 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  build:
+  publish:
     needs: [ main, generate ]
+    name: Publish ${{ needs.generate.outputs.gitTag }} to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Required for npm trusted publishing (OIDC) and provenance. No NPM_TOKEN is
+      # stored anywhere: npm mints a short lived credential for this run alone.
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        name: Setup pnpm
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v7
+        name: Setup node
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+      - run: pnpm install --frozen-lockfile
+        name: pnpm install
+      - run: pnpm run build
+        name: Build
+
+      # pnpm has no OIDC support, so the publish itself goes through npm, which ships
+      # with node 24. --ignore-scripts keeps prepublishOnly from wiping lib/ between the
+      # build above and the pack: the tarball only contains lib/**.
+      - name: Publish to npm
+        env:
+          TAG: ${{ needs.generate.outputs.gitTag }}
+        run: |
+          version=$(node -p "require('./package.json').version")
+          if [ "$version" != "$TAG" ]; then
+            echo "::error::package.json is at $version but the release tag is $TAG"
+            exit 1
+          fi
+          if npm view "@sofiakb/nemaaz@$version" version >/dev/null 2>&1; then
+            echo "@sofiakb/nemaaz@$version is already on the registry, nothing to do."
+            exit 0
+          fi
+          # A suffixed version is a prerelease: keep it off the latest dist-tag so that
+          # plain installs of the package keep resolving to the last stable release.
+          case "$version" in
+            *-*) dist_tag=dev ;;
+            *)   dist_tag=latest ;;
+          esac
+          echo "Publishing $version under the $dist_tag dist-tag"
+          npm publish --access public --tag "$dist_tag" --provenance --ignore-scripts
+
+  build:
+    needs: [ main, generate, publish ]
     name: Create Release from ${{ needs.generate.outputs.gitTag }}
     runs-on: ubuntu-latest
     permissions:
