@@ -12,7 +12,6 @@
 import { CalculatorParams } from './logic/calculator-params';
 import { Prayer, prayerFromString } from './enums/prayer';
 import { PrayerTimesCalculator } from './payer-times-calculator';
-import { map } from 'lodash';
 
 export interface PrayerTimeResult {
 	prayer: Prayer;
@@ -63,7 +62,7 @@ export class PrayerTimes {
 	}
 
 	get values(): PrayerTimeResult[] {
-		return map(this.toJson(), (item: Date, key: string) => ({ prayer: prayerFromString(key), date: item }));
+		return Object.entries(this.toJson()).map(([key, item]) => ({ prayer: prayerFromString(key), date: item }));
 	}
 
 	timeForPrayer(prayer: string): Date | null {
@@ -108,6 +107,40 @@ export class PrayerTimes {
 		if (date > this.dhuhr) return { prayer: Prayer.ASR, date: this.asr };
 		if (date > this.shuruq) return { prayer: Prayer.DHUHR, date: this.dhuhr };
 		if (date > this.fajr) return { prayer: Prayer.SHURUQ, date: this.shuruq };
+		return { prayer: Prayer.FAJR, date: this.fajr };
+	}
+
+	/**
+	 * Prayer currently in, restricted to the five daily prayers.
+	 *
+	 * Unlike {@link currentPrayer} this never returns SHURUQ (a solar event, not a prayer)
+	 * nor ISHA_BEFORE: before today's Fajr the current prayer is the previous day's Isha,
+	 * reported as ISHA carrying the `ishaBefore` date.
+	 */
+	currentDailyPrayer(date?: Date): PrayerTimeResult {
+		date ??= new Date();
+		if (date > this.isha) return { prayer: Prayer.ISHA, date: this.isha };
+		if (date > this.maghrib) return { prayer: Prayer.MAGHRIB, date: this.maghrib };
+		if (date > this.asr) return { prayer: Prayer.ASR, date: this.asr };
+		if (date > this.dhuhr) return { prayer: Prayer.DHUHR, date: this.dhuhr };
+		if (date > this.fajr) return { prayer: Prayer.FAJR, date: this.fajr };
+		return { prayer: Prayer.ISHA, date: this.ishaBefore };
+	}
+
+	/**
+	 * Next prayer to come, restricted to the five daily prayers.
+	 *
+	 * Unlike {@link nextPrayer} this never returns SHURUQ (between Fajr and sunrise the next
+	 * prayer is Dhuhr) nor FAJR_AFTER: after Isha the next prayer is the following day's
+	 * Fajr, reported as FAJR carrying the `fajrAfter` date.
+	 */
+	nextDailyPrayer(date?: Date): PrayerTimeResult {
+		date ??= new Date();
+		if (date > this.isha) return { prayer: Prayer.FAJR, date: this.fajrAfter };
+		if (date > this.maghrib) return { prayer: Prayer.ISHA, date: this.isha };
+		if (date > this.asr) return { prayer: Prayer.MAGHRIB, date: this.maghrib };
+		if (date > this.dhuhr) return { prayer: Prayer.ASR, date: this.asr };
+		if (date > this.fajr) return { prayer: Prayer.DHUHR, date: this.dhuhr };
 		return { prayer: Prayer.FAJR, date: this.fajr };
 	}
 }

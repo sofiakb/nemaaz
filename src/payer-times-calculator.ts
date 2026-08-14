@@ -21,7 +21,6 @@ import { Portion } from './logic/portion';
 import { Trigonometric } from './logic/trigonometric';
 import { Calculation } from './logic/calculation';
 import { DateTime, Duration } from 'luxon';
-import { mapValues } from 'lodash';
 
 export class PrayerTimesCalculator {
 	private timeNames: string[] = [
@@ -88,6 +87,24 @@ export class PrayerTimesCalculator {
 		}).setZone(this.timeZone);
 	}
 
+	// Rebuild the parameters this instance actually runs with, for a neighbouring day.
+	// Only the date changes: the calculation method, the Asr juristic school, the high
+	// latitude adjustment and the time zone all have to be kept, otherwise ishaBefore and
+	// fajrAfter silently fall back to the defaults instead of matching the rest of the day.
+	private paramsForDate(date: Date): CalculatorParams {
+		return new CalculatorParams({
+			coordinates: this.coordinates,
+			date,
+			calculationMethod: this.calculationMethod,
+			asrJuristic: this.asrJuristic,
+			dhuhrMinutes: this.dhuhrMinutes,
+			numIterations: this.numIterations,
+			adjustHighLats: this.adjustHighLats,
+			timeFormat: this.timeFormat,
+			timeZone: this.timeZone,
+		});
+	}
+
 	public getDatePrayerTimes(coordinates: Coordinates): Record<string, Date> {
 		this.coordinates = coordinates;
 
@@ -114,31 +131,27 @@ export class PrayerTimesCalculator {
 		if (this.loop) {
 			days['fajrAfter'] = DateTime.fromJSDate(
 				new PrayerTimesCalculator(
-					new CalculatorParams({
-						coordinates: this.coordinates,
-						date: DateTime.fromJSDate(this.date)
+					this.paramsForDate(
+						DateTime.fromJSDate(this.date)
 							.plus(Duration.fromObject({ days: 1 }))
 							.toJSDate(),
-						timeZone: this.timeZone,
-					}),
+					),
 					false,
 				).getPrayerTimes()['fajr']!,
 			).setZone(this.timeZone);
 			days['ishaBefore'] = DateTime.fromJSDate(
 				new PrayerTimesCalculator(
-					new CalculatorParams({
-						coordinates: this.coordinates,
-						date: DateTime.fromJSDate(this.date)
+					this.paramsForDate(
+						DateTime.fromJSDate(this.date)
 							.minus(Duration.fromObject({ days: 1 }))
 							.toJSDate(),
-						timeZone: this.timeZone,
-					}),
+					),
 					false,
 				).getPrayerTimes()['isha']!,
 			).setZone(this.timeZone);
 		}
 
-		return mapValues(days, (item) => item.toJSDate());
+		return Object.fromEntries(Object.entries(days).map(([name, item]) => [name, item.toJSDate()]));
 	}
 
 	public getPrayerTimes(): Record<string, Date> {

@@ -4,6 +4,11 @@
  */
 
 export default {
+  // The expected times below are absolute instants captured on a Europe/Paris machine, and
+  // baseDate() reads the system zone, so the suite has to run under a fixed zone to be
+  // reproducible on CI.
+  globalSetup: '<rootDir>/tests/setup.ts',
+
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
