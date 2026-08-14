@@ -138,6 +138,7 @@ jobs:
           release_name: ${{ needs.generate.outputs.gitTag }}
           body: ${{ steps.get_git_sha.outputs.gitSha }}
           draft: false
-          prerelease: false
+          # Tags carrying a suffix (1.0.3-dev.0, -rc, -beta...) are prereleases.
+          prerelease: ${{ contains(needs.generate.outputs.gitTag, '-') }}
     permissions:
       contents: write
