@@ -1,0 +1,144 @@
+name: Create release
+
+on:
+  push:
+    branches:
+      - 'release/*'
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+
+  test:
+    name: Testing npm package
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        name: Checkout actions
+      - uses: pnpm/action-setup@v6
+        name: Setup pnpm
+        with:
+          version: 11.21.0
+      - uses: actions/setup-node@v7
+        name: Setup node
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+        name: pnpm install
+      - run: pnpm run test
+        name: Run tests
+
+  generate:
+    needs: test
+    name: Generate tags
+    runs-on: ubuntu-latest
+    steps:
+      # The tag is derived from the branch name alone (release/1.2.3 -> 1.2.3), so no
+      # checkout and no git history are needed here.
+      - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_REF#refs/heads/release/}" | sed '/^branch=v/ s/=v/=/' >> $GITHUB_OUTPUT
+        id: extract_branch
+    outputs:
+      gitTag: ${{ steps.extract_branch.outputs.branch }}
+
+  main:
+    needs: generate
+    name: Create PR Release to Main / Develop
+    runs-on: ubuntu-latest
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v7
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Create PR release -> main
+        id: open-pr
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          BASE: ${{ github.event.repository.default_branch }}
+        run: |
+          number=$(gh pr list --head "${GITHUB_REF#refs/heads/}" --base "$BASE" --state open --json number --jq '.[0].number')
+          if [ -z "$number" ]; then
+            gh pr create --base "$BASE" --head "${GITHUB_REF#refs/heads/}" \
+              --title "[Automated] Merge ${GITHUB_REF_NAME} into $BASE" \
+              --body "Automated Pull Request" --assignee sofiakb
+            number=$(gh pr list --head "${GITHUB_REF#refs/heads/}" --base "$BASE" --state open --json number --jq '.[0].number')
+          fi
+          echo "pr_number=$number" >> $GITHUB_OUTPUT
+
+      - name: Create PR release -> develop
+        id: open-pr-develop
+        env:
+          GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          number=$(gh pr list --head "${GITHUB_REF#refs/heads/}" --base develop --state open --json number --jq '.[0].number')
+          if [ -z "$number" ]; then
+            gh pr create --base develop --head "${GITHUB_REF#refs/heads/}" \
+              --title "[Automated] Merge ${GITHUB_REF_NAME} into develop" \
+              --body "Automated Pull Request" --assignee sofiakb
+            number=$(gh pr list --head "${GITHUB_REF#refs/heads/}" --base develop --state open --json number --jq '.[0].number')
+          fi
+          echo "pr_number=$number" >> $GITHUB_OUTPUT
+
+      # https://github.com/marketplace/actions/enable-pull-request-automerge
+      - name: Enable main automerge
+        if: steps.open-pr.outputs.pr_number != ''
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          pull-request-number: ${{ steps.open-pr.outputs.pr_number }}
+          merge-method: merge
+
+      - name: Enable develop automerge
+        if: steps.open-pr-develop.outputs.pr_number != ''
+        uses: peter-evans/enable-pull-request-automerge@v3
+        with:
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          pull-request-number: ${{ steps.open-pr-develop.outputs.pr_number }}
+          merge-method: merge
+
+      - name: Autoapprove PR release -> main
+        if: steps.open-pr.outputs.pr_number != ''
+        run: gh pr review --approve "${{ steps.open-pr.outputs.pr_number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Autoapprove PR release -> develop
+        if: steps.open-pr-develop.outputs.pr_number != ''
+        run: gh pr review --approve "${{ steps.open-pr-develop.outputs.pr_number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    needs: [ main, generate ]
+    name: Create Release from ${{ needs.generate.outputs.gitTag }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      # actions/create-release was archived in 2021; gh ships on the runner and uses the
+      # job's own GITHUB_TOKEN. Tags carrying a suffix (-dev, -rc, -beta) are prereleases.
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.generate.outputs.gitTag }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists, nothing to do."
+            exit 0
+          fi
+          case "$TAG" in
+            *-*) prerelease=--prerelease ;;
+            *)   prerelease= ;;
+          esac
+          gh release create "$TAG" \
+            --target "$GITHUB_SHA" \
+            --title "$TAG" \
+            --notes "$GITHUB_SHA" \
+            $prerelease

@@ -6,16 +6,23 @@
 
 [comment]: <> ([![LinkedIn][linkedin-shield]][linkedin-url])
 
+[![Create release](https://github.com/sofiakb/nemaaz/actions/workflows/create_release.yml/badge.svg)](https://github.com/sofiakb/nemaaz/actions/workflows/create_release.yml)
+
 
 
 <!-- PROJECT LOGO -->
+
+<p align="center">
+  <img height="100px" src="./assets/images/logo.png">
+</p>
+
 <br />
 <p align="center">
 
   <h1 align="center">nemaaz</h1>
 
   <p align="center">
-      A typescript library for axios API calls.
+      A typescript library to compute Islamic prayer times.
       <br />
       <!--<a href="https://github.com/sofiakb/nemaaz"><strong>Explore the docs »</strong></a>-->
       <br />
@@ -61,25 +68,24 @@
 
 ## About The Library
 
-The library simplify API calls with axios library.
+The library gives you prayer times in a given position.
 
 ### Built With
 
 * [Javascript](https://developer.mozilla.org/fr/docs/Web/JavaScript)
 * [Typescript](https://www.typescriptlang.org/)
-* [Axios](https://axios-http.com/docs/intro)
 
 <!-- GETTING STARTED -->
 
 ### Prerequisites
 
-- axios
+- node >= 24
 - typescript
 
 ### Installation
 
 ```shell
-npm install --save @sofiakb/nemaaz
+pnpm add @sofiakb/nemaaz
 ```
 
 <!-- USAGE EXAMPLES -->
@@ -87,13 +93,103 @@ npm install --save @sofiakb/nemaaz
 ## Usage
 
 ```typescript
-import Api from "@sofiakb/nemaaz";
+import {
+	AsrJuristic,
+	CalculationMethod,
+	CalculatorParams,
+	Coordinates,
+	HigherLatitudesAdjusting,
+	PrayerTimes,
+	TimeFormats,
+} from '@sofiakb/nemaaz';
 
-// Use in controller
-class ExampleController extends Api {
-    
-}
+import { DateTime } from 'luxon';
+
+const date = DateTime.now().setZone('Europe/Paris');
+
+const test = new PrayerTimes(
+		new CalculatorParams({
+			coordinates: new Coordinates({
+				latitude: 50.3555,
+				longitude: 3.11127,
+			}),
+			calculationMethod: CalculationMethod.mwl(),
+			adjustHighLats: HigherLatitudesAdjusting.ANGLE_BASED,
+			asrJuristic: AsrJuristic.SHAFI,
+			dhuhrMinutes: 0,
+			numIterations: 1,
+			timeFormat: TimeFormats.TIME24,
+			date: date.toJSDate(),
+		}),
+);
+
+console.log(
+	Object.fromEntries(
+		Object.entries(test.toJson()).map(([name, item]) => [
+			name,
+			DateTime.fromJSDate(item, { zone: 'Europe/Paris' }).toString(),
+		]),
+	),
+);
 ```
+
+### The nine times returned
+
+A `PrayerTimes` instance is built for **one** day, and exposes nine times. Only five of them are
+actual prayers:
+
+| Field        | Prayer?           | Meaning                                                                     |
+|--------------|-------------------|-----------------------------------------------------------------------------|
+| `fajr`       | ✅ Fajr            | Dawn prayer, on the requested day.                                          |
+| `shuruq`     | ❌                 | Sunrise. Marks the end of the Fajr window, it is **not** a prayer.          |
+| `dhuhr`      | ✅ Dhuhr           | Midday prayer.                                                              |
+| `asr`        | ✅ Asr             | Afternoon prayer.                                                           |
+| `sunset`     | ❌                 | Sunset, exposed for reference. Usually equal to `maghrib`.                  |
+| `maghrib`    | ✅ Maghrib         | Sunset prayer.                                                              |
+| `isha`       | ✅ Isha            | Night prayer, on the requested day.                                         |
+| `ishaBefore` | ✅ Isha (D‑1)      | **Misleading name**: this is not a distinct prayer. It is the *previous* day's Isha, i.e. the Isha still running during the small hours of the requested day. |
+| `fajrAfter`  | ✅ Fajr (D+1)      | **Misleading name**: this is not a distinct prayer. It is the *next* day's Fajr, i.e. the Fajr that follows the requested day's Isha. |
+
+`ishaBefore` and `fajrAfter` exist purely so that a single instance can answer "what is running
+right now?" and "what comes next?" across the day boundary, without the caller having to build a
+second instance for the neighbouring day. They are computed with **the same parameters** as the
+rest of the day — calculation method, Asr school, high latitude adjustment and time zone all
+carry over.
+
+The `Prayer` enum mirrors that layout, so `Prayer.ISHA_BEFORE` really means *Isha* and
+`Prayer.FAJR_AFTER` really means *Fajr*. `prayerToLabel()` and `prayerToArabic()` already collapse
+them accordingly (both `FAJR` and `FAJR_AFTER` render as `Fajr`).
+
+### Knowing the current and next prayer
+
+Two families of accessors are available:
+
+```typescript
+// Raw timeline: every time above is a candidate, including SHURUQ, ISHA_BEFORE and FAJR_AFTER.
+test.currentPrayer(); // may return SHURUQ or ISHA_BEFORE
+test.nextPrayer();    // may return SHURUQ or FAJR_AFTER
+
+// Prayer-only timeline: restricted to the five daily prayers.
+test.currentDailyPrayer(); // always one of FAJR, DHUHR, ASR, MAGHRIB, ISHA
+test.nextDailyPrayer();    // always one of FAJR, DHUHR, ASR, MAGHRIB, ISHA
+```
+
+`currentDailyPrayer()` and `nextDailyPrayer()` resolve the day overflow for you and never report a
+non-prayer:
+
+- after Isha, `nextDailyPrayer()` returns `FAJR` carrying the `fajrAfter` date (instead of `FAJR_AFTER`);
+- before Fajr, `currentDailyPrayer()` returns `ISHA` carrying the `ishaBefore` date (instead of `ISHA_BEFORE`);
+- between Fajr and sunrise, `nextDailyPrayer()` returns `DHUHR` (instead of `SHURUQ`), and
+  `currentDailyPrayer()` stays on `FAJR`.
+
+Prefer them for display; use `currentPrayer()` / `nextPrayer()` only when you genuinely need
+sunrise in the timeline. Both accept an optional `Date` and default to now.
+
+### Time zones
+
+Times are anchored on the `timeZone` passed in `CalculatorParams`, but the base date is read from
+the host's local calendar day. Pass a `date` that lands on the intended day in the host's own zone,
+and pin `TZ` in CI so results stay reproducible across machines.
 
 <!-- ROADMAP -->
 
