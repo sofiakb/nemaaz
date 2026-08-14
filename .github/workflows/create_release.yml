@@ -23,13 +23,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         name: Checkout actions
+      - uses: pnpm/action-setup@v4
+        name: Setup pnpm
+        with:
+          version: 11.21.0
       - uses: actions/setup-node@v3
         name: Setup node
         with:
-          node-version: 20
-      - run: npm i -g pnpm
-        name: Install global pnpm
-      - run: pnpm i
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
         name: pnpm install
       - run: pnpm run test
         name: Run tests
